@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar, Apagar e Adicionar Item na Lista</title>
+    <style>
+        /* Estilo para o item selecionado */
+        .riscado {
+            color: blue;
+            text-decoration: line-through;
+        }
+
+        .selecionado {
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+<body style="background-color: #f0f0f0">
+    <h1>Lista de compras</h1>
+
+    <input type="text" id="termoPesquisa" placeholder="Digite sua pesquisa">
+    <button onclick="pesquisar()">Pesquisar</button>
+
+    <ul id="lista">
+        <li><span onclick="riscarItem(event)">Carne</span> <button onclick="editarItem(event, this)">Editar</button> <button onclick="apagarItem(this)">Apagar</button></li>
+        <li><span onclick="riscarItem(event)">Milho</span> <button onclick="editarItem(event, this)">Editar</button> <button onclick="apagarItem(this)">Apagar</button></li>
+        <li><span onclick="riscarItem(event)">Pão</span> <button onclick="editarItem(event, this)">Editar</button> <button onclick="apagarItem(this)">Apagar</button></li>
+    </ul>
+
+    <br>
+    <input type="text" id="novoItemText">
+    <button onclick="adicionarNovoItem()">Adicionar</button>
+
+    <script>
+        function riscarItem(event) {
+            var item = event.target.closest('li');
+            var lista = document.getElementById("lista");
+            item.classList.toggle("riscado");
+            if (item.classList.contains("riscado")) {
+                lista.appendChild(item);
+            } else {
+                var itens = lista.getElementsByTagName("li");
+                for (var i = 0; i < itens.length - 1; i++) {
+                    if (!itens[i].classList.contains("riscado")) {
+                        lista.insertBefore(item, itens[i + 1]);
+                        break;
+                    }
+                }
+            }
+        }
+
+        function pesquisar() {
+            var termo = document.getElementById("termoPesquisa").value.toLowerCase();
+            var listaItens = document.querySelectorAll("#lista li");
+            
+            listaItens.forEach(function(item) {
+                var textoItem = item.innerText.toLowerCase();
+                if (textoItem.includes(termo)) {
+                    item.style.display = "block";
+                } else {
+                    item.style.display = "none";
+                }
+            });
+        }
+
+        function editarItem(event, botao) {
+            event.stopPropagation();
+            var item = botao.parentNode;
+            item.classList.add("selecionado");
+            var textoAtual = item.firstChild.innerText.trim();
+            var novoTexto = prompt("Editar item:", textoAtual);
+            if (novoTexto !== null) {
+                item.firstChild.innerText = novoTexto;
+            }
+            item.classList.remove("selecionado");
+        }
+
+        function apagarItem(botao) {
+            var item = botao.parentNode;
+            item.parentNode.removeChild(item);
+        }
+
+        function adicionarNovoItem() {
+            var textoNovoItem = document.getElementById("novoItemText").value.trim();
+            if (textoNovoItem !== "") {
+                var lista = document.getElementById("lista");
+                var novoItem = document.createElement("li");
+                novoItem.innerHTML = '<span onclick="riscarItem(event)">' + textoNovoItem + '</span> <button onclick="editarItem(event, this)">Editar</button> <button onclick="apagarItem(this)">Apagar</button>';
+                lista.appendChild(novoItem);
+                document.getElementById("novoItemText").value = "";
+            } else {
+                alert("Por favor, insira um novo item.");
+            }
+        }
+    </script>
+</body>
+</html>
